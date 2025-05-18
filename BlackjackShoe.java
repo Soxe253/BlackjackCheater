@@ -12,7 +12,7 @@ public class BlackjackShoe{
     public BlackjackShoe(int decks){
         this.decks = decks;
         shoe = new ArrayList<Card>();
-        for(int i = 1; i < this.decks; i++){
+        for(int i = 0; i < this.decks; i++){
             Deck deck = new Deck();
             shoe.addAll(deck.getCards());
         }

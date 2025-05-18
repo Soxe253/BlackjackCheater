@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 
 public class Dealer {
-    ArrayList<Card> hand;
-    int handValue;
+    public ArrayList<Card> hand;
+    public int handValue;
     
     /**
      * Initiializes the dealers hand

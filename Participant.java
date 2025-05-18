@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class Participant {
-    protected ArrayList<Card> hand;
-    protected int handValue;
+    public ArrayList<Card> hand;
+    public int handValue;
 
     public Participant() {
         hand = new ArrayList<Card>();

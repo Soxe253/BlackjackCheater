@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BlackjackGame {
@@ -26,6 +27,7 @@ public class BlackjackGame {
      */
     public void initialDeal(){
         if(shoe.getSize() < (Math.round((decks * 52) * 0.15))){
+            System.out.println("reshuffling");
             reshuffle();
         }
 
@@ -102,6 +104,18 @@ public class BlackjackGame {
         }
 
     }
+
+    public ArrayList<Card> cardsFromHand(){
+        ArrayList<Card> cards = new ArrayList<Card>();
+        for(int i = 0; i < dealer.hand.size(); i++){
+            cards.add(dealer.hand.get(i));
+        }
+        for(int i = 0; i < player1.hand.size(); i++){
+            cards.add(player1.hand.get(i));
+        }
+        System.out.println(cards.toString());
+        return cards;
+    }
     
     public void playGame(){
 
@@ -112,12 +126,14 @@ public class BlackjackGame {
 
         dealerPlayGame();
 
+        cardsFromHand();
+        
         determineWinner();
     }
 
 
     public static void main (String[] args){
-        BlackjackGame game = new BlackjackGame(6);
+        BlackjackGame game = new BlackjackGame(1);
         boolean keepPlaying = true;
         while(keepPlaying){
             game.playGame();
