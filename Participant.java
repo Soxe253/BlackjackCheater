@@ -4,14 +4,22 @@ import java.util.Scanner;
 public abstract class Participant {
     public ArrayList<Card> hand;
     public int handValue;
+    public Card dealersCard;
+    public boolean soft;
 
     public Participant() {
         hand = new ArrayList<Card>();
         handValue = 0;
+        soft = false;
     }
 
     public void hit(Card card) {
         hand.add(card);
+        calculateHandValue();
+    }
+
+    public void getDealerCard(Card card){
+        dealersCard = card;
     }
 
      /**
@@ -42,8 +50,15 @@ public abstract class Participant {
         while(totalValue > 21 && totalAces > 0){
             totalValue -= 10;
             totalAces--;
+
         }
         handValue = totalValue;
+        if(totalAces > 0){
+            soft = true;
+        }
+        else{
+            soft = false;
+        }
         return totalValue;
     }
 
@@ -56,7 +71,11 @@ public abstract class Participant {
      */
     public void resetHand(){
         hand.clear();
+        dealersCard = null;
+        soft = false;
     }
 
     public abstract boolean wantsToHit(Scanner scanner);
+
+    
 }

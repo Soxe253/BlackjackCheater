@@ -7,21 +7,21 @@ public class BasicStrategy {
         initializeHard();
         initializeSoft();
 
-        System.out.println("Hard totals");
-        for (int row = 0; row < hardTotals.length; row++) {
-            for (int col = 0; col < hardTotals[row].length; col++) {
-                System.out.print(hardTotals[row][col] + " ");
-            }
-            System.out.println(); // Move to the next line after each row
-        }
-        System.out.println();
-        System.out.println("soft totals");
-        for (int row = 0; row < softTotals.length; row++) {
-            for (int col = 0; col < softTotals[row].length; col++) {
-                System.out.print(softTotals[row][col] + " ");
-            }
-            System.out.println(); // Move to the next line after each row
-        }
+        // System.out.println("Hard totals");
+        // for (int row = 0; row < hardTotals.length; row++) {
+        //     for (int col = 0; col < hardTotals[row].length; col++) {
+        //         System.out.print(hardTotals[row][col] + " ");
+        //     }
+        //     System.out.println(); // Move to the next line after each row
+        // }
+        // System.out.println();
+        // System.out.println("soft totals");
+        // for (int row = 0; row < softTotals.length; row++) {
+        //     for (int col = 0; col < softTotals[row].length; col++) {
+        //         System.out.print(softTotals[row][col] + " ");
+        //     }
+        //     System.out.println(); // Move to the next line after each row
+        // }
     }
 
     private void initializeHard(){
@@ -76,16 +76,26 @@ public class BasicStrategy {
 
     public boolean shouldHit(boolean soft, int pVal, int dVal){
         int playervalue;
+        int dealerValue = dVal - 2;
+        if(soft){
+            if(pVal < 19){
+                playervalue = pVal - 13;
+            }
+            else{
+                playervalue = 6;
+            }
+            return shouldHitSoft(playervalue, dealerValue);
+        }
         if(pVal < 9){
             playervalue = 0;
+        }
+        else if(pVal >= 17 && pVal < 22){
+            playervalue = 9;
         }
         else{
             playervalue = pVal - 8;
         }
-        if(soft){
-            return shouldHitSoft(playervalue, dVal);
-        }
-        return hardTotals[playervalue][dVal];
+        return hardTotals[playervalue][dealerValue];
     }
 
     public boolean shouldHitSoft(int playerValue, int dVal){
