@@ -1,16 +1,20 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-
+/**
+ * A base abstract class for a participant in blackjack
+ */
 public abstract class Participant {
     public ArrayList<Card> hand;
     public int handValue;
     public Card dealersCard;
     public boolean soft;
+    public int bank;
 
     public Participant() {
         hand = new ArrayList<Card>();
         handValue = 0;
         soft = false;
+        bank = 100;
     }
 
     public void hit(Card card) {
@@ -28,10 +32,14 @@ public abstract class Participant {
      */
     public String showHand(){
         StringBuilder tmp = new StringBuilder();
+        String bSoft = "";
+        if(soft){
+            bSoft = " {soft}";
+        }
         for(Card card : hand){
             tmp.append(card.toString()).append(" ");
         }
-        return "(" + tmp.toString().trim() + ")";
+        return "(" + tmp.toString().trim() + bSoft + ")";
     }
 
     public int calculateHandValue() {
@@ -75,7 +83,35 @@ public abstract class Participant {
         soft = false;
     }
 
+     /**
+     * Adds new winnings to bank total
+     * @param winnings amount won
+     */
+    public void betWin(int winnings){
+        bank = bank + winnings;
+        System.out.println("New bank total is: " + bank);
+    }
+
+    /**
+     * Get the bank total of player
+     * @return bank
+     */
+    public int getBank(){
+        return bank;
+    }
+
+    /**
+     * checks if hand is soft
+     * @return true if soft
+     */
+    public boolean isSoft(){
+        return soft;
+    }
+
     public abstract boolean wantsToHit(Scanner scanner);
 
+    public abstract int bet(Scanner input);
+
+    
     
 }

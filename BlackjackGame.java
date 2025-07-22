@@ -29,19 +29,23 @@ public class BlackjackGame {
     public void reshuffle(){
         shoe = new BlackjackShoe(this.decks);
     }
+    
     /**
-     * does the initial deal of two cards to each player and dealer
+     * Deals two cards to each player and dealer, reshuffles if shoe gets too low
+     * @return true/false if it had to reshuffle
      */
-    public void initialDeal(){
-        if(shoe.getSize() < (Math.round((decks * 52) * 0.15))){
+    public boolean initialDeal(){
+        boolean shuffled = false;
+        if(shoe.getSize() < ((int) (Math.round((decks * 52) * 0.15)))){
             System.out.println("reshuffling");
             reshuffle();
+            shuffled = true;
         }
-
         player1.hit(shoe.deal());
         dealer.hit(shoe.deal());
         player1.hit(shoe.deal());
         dealer.hit(shoe.deal());
+        return shuffled;
     }
 
     public void resetHands(){
@@ -50,11 +54,16 @@ public class BlackjackGame {
     }
 
     /**
-     * plays the players half of the game
+     * plays players half of the game
+     * @return 0 for stand, 1 for bust, 2 for bj
      */
-    public void playerGame(){
+    public int playerGame(){
         boolean isPlayerDone = false;
         player1.getDealerCard(dealer.hand.get(1));
+        if(player1.getHandValue() == 21){
+            System.out.println("Blackjack!");
+            return 2;
+        }
         while(!isPlayerDone){
             System.out.println("Dealer Hand: " + dealer.showFirstCardHidden() + " Value: " + dealer.revealedCardValue());
             System.out.println(player1.showHand() +  " Value: " + player1.getHandValue());
@@ -67,57 +76,101 @@ public class BlackjackGame {
             }
             if(player1.getHandValue() > 21){
                 System.out.println("BUST");
-                return;
+                return 1;
             }
         }
         System.out.println("STAND");
+        return 0;
     }
 
-    public void dealerPlayGame(){
+    /**
+     * plays dealers half of turn
+     * @return true if bj
+     */
+    public boolean dealerPlayGame(int playerResult){
+        if(playerResult == 1){
+            return false;
+        }
         System.out.println("Dealers Hand " + dealer.showFirstCardHidden());
         if(dealer.getHandValue() == 21){
             System.out.println("Dealer has blackjack");
             System.out.println(dealer.showHand());
-            return;
+            return true;
         }
         while(dealer.shouldHit()){
             dealer.hit(shoe.deal());
         }
+        return false;
     }
 
    /**
-    * determines winner of game by comparing hand values
-    * @return 0 if dealer win, 1 if player win and 2 if tie
+    * determines who wins the game
+    * @param blackjackOrTie 0 if no bj/tie, 1 if player bj and 2 if both have bj, 3 if dealer bj and player no -1 if error
+    * @param betAmount the amount wagered
+    * @return 0 if dealer win, 1 if player win and 2 if tie, -1 if error
     */
-    public int determineWinner(){
+    public int determineWinner(int blackjackOrTie, int betAmount){
+        if(blackjackOrTie == -1){
+            System.out.println("error from input");
+            return -1;
+        }
+        int winnings = 0;
         int dealerHandValue = dealer.getHandValue();
         System.out.println("Dealer's final hand: " + dealer.showHand() + " Value: " + dealerHandValue);
-
         int playerHandValue = player1.getHandValue();
         System.out.println(player1.showHand() + " Value: " + playerHandValue);
-
-        if(playerHandValue > 21){
-            System.out.println("Player Busts!");
-            resetHands();
-            return 0;
-        } else if(dealerHandValue > 21 || playerHandValue > dealerHandValue){
-            System.out.println("Player Wins!");
-            resetHands();
-            return 1;
-        } else if(playerHandValue == dealerHandValue){
-            System.out.println("Its a Tie!");
-            resetHands();
-            return 2;
-        } else{
-            System.out.println("Player loses to the dealer");
-            resetHands();
+        if(blackjackOrTie == 3){
+            System.out.println("dealer blackjack!");
             return 0;
         }
-
+        //bj tie
+        if(blackjackOrTie == 2){
+            winnings = betAmount;
+            System.out.println("Both have blackjack! oof its a tie");
+            player1.betWin(winnings);
+            return 2;
+        }
+        //player blackjack
+        if(blackjackOrTie == 1){
+            winnings = (int) Math.round(betAmount * (1.2));
+            System.out.println("Player has blackjack!");
+            System.out.println("Won $"+winnings);
+            player1.betWin(winnings);
+            return 1;
+        }
+        if(blackjackOrTie == 0){
+            if(playerHandValue > 21){
+                System.out.println("Player Busts!");
+                resetHands();
+                return 0;
+            } else if(dealerHandValue > 21 || playerHandValue > dealerHandValue){
+                winnings = betAmount * 2;
+                System.out.println("Player Wins!");
+                System.out.println("Player wins $"+winnings);
+                player1.betWin(winnings);
+                resetHands();
+                return 1;
+            } else if(playerHandValue == dealerHandValue){
+                winnings = betAmount;
+                System.out.println("Its a Tie!");
+                player1.betWin(winnings);
+                resetHands();
+                return 2;
+            } else{
+                System.out.println("Player loses to the dealer");
+                resetHands();
+                return 0;
+            }
+        }
+        System.out.println("bottom of method no return");
+        return -1;
     }
-
+    /**
+     * This is for counting cards later, puts all played cards from round into an array
+     * @return the array of played cards
+     */
     public ArrayList<Card> cardsFromHand(){
-        ArrayList<Card> cards = new ArrayList<Card>();
+        ArrayList<Card> cards = new ArrayList<>();
         for(int i = 0; i < dealer.hand.size(); i++){
             cards.add(dealer.hand.get(i));
         }
@@ -129,22 +182,40 @@ public class BlackjackGame {
     }
     
     public void playGame(){
-
+        int bjOrTie = 0;
+        int betAmount = player1.bet(input);
 
         initialDeal();
 
-        playerGame();
+        int playerBj = playerGame();
 
-        dealerPlayGame();
+        boolean dealerBj = dealerPlayGame(playerBj);
 
         //cardsFromHand();
-        
-        determineWinner();
+        //tie
+        if(playerBj == 2 && dealerBj){
+            bjOrTie = 2;
+        }
+        if(playerBj == 2 && !dealerBj){
+            bjOrTie = 1;
+        }
+        if(playerBj != 2 && dealerBj){
+            bjOrTie = 3;
+        }
+        determineWinner(bjOrTie, betAmount);
+
+        System.out.println("Current bank amount is $"+player1.getBank());
     }
 
 
     public static void main (String[] args){
-        BlackjackGame game = new BlackjackGame(1,1);
+        if (args.length < 1) {
+            System.out.println("Usage: java BlackjackGame <playerType>" + "\n 0 = humand player and 1 = robot");
+            return;
+        }
+        int playerType = Integer.parseInt(args[0]);
+
+        BlackjackGame game = new BlackjackGame(1,playerType);
         boolean keepPlaying = true;
         while(keepPlaying){
             game.playGame();

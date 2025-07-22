@@ -36,4 +36,9 @@ public class BStratUser extends Participant{
         System.out.println("STAND");
 
     }
+
+    @Override
+    public int bet(Scanner input) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
