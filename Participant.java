@@ -9,12 +9,14 @@ public abstract class Participant {
     public Card dealersCard;
     public boolean soft;
     public int bank;
+    public int betAmount;
 
     public Participant() {
         hand = new ArrayList<Card>();
         handValue = 0;
         soft = false;
         bank = 100;
+        betAmount = 0;
     }
 
     public void hit(Card card) {
@@ -61,7 +63,7 @@ public abstract class Participant {
 
         }
         handValue = totalValue;
-        if(totalAces > 0){
+        if(totalAces > 0 && totalValue < 21){
             soft = true;
         }
         else{
@@ -81,6 +83,7 @@ public abstract class Participant {
         hand.clear();
         dealersCard = null;
         soft = false;
+        betAmount = 0;
     }
 
      /**
@@ -101,6 +104,14 @@ public abstract class Participant {
     }
 
     /**
+     * Reurns current bet amount
+     * @return betAmount
+     */
+    public int getBetAmount(){
+        return betAmount;
+    }
+
+    /**
      * checks if hand is soft
      * @return true if soft
      */
@@ -110,7 +121,11 @@ public abstract class Participant {
 
     public abstract boolean wantsToHit(Scanner scanner);
 
+    public abstract String getAction(Scanner input);
+
     public abstract int bet(Scanner input);
+
+    public abstract boolean doubleDown();
 
     
     

@@ -11,6 +11,7 @@ public class HumanPlayer extends Participant{
         handValue = 0;
         bank = 100;
         soft = false;
+        betAmount = 0;
     }
 
     // /**
@@ -24,7 +25,7 @@ public class HumanPlayer extends Participant{
     //     }
     //     return "(" + tmp.toString().trim() + ")";
     // }
-
+    @Override
     public boolean wantsToHit(Scanner input){
         System.out.println("Hit or Stand?");
         String choice = input.nextLine();
@@ -32,21 +33,63 @@ public class HumanPlayer extends Participant{
     }
 
     /**
+     * Returns the users decision to take
+     * @param input scanner 
+     * @return h s or d for hit stand double
+     */
+    @Override
+    public String getAction(Scanner input){
+        System.out.println("Hit or Stand or Double?");
+        boolean decision = false;
+        while(!decision){
+            String choice = input.nextLine();
+            if(choice.equalsIgnoreCase("hit") || choice.equalsIgnoreCase("h")){
+                return "h";
+            }
+            else if(choice.equalsIgnoreCase("stand") || choice.equalsIgnoreCase("s")){
+                return "s";
+            }
+            else if(choice.equalsIgnoreCase("double") || choice.equalsIgnoreCase("d")){
+                return "d";
+            }
+            else{
+                System.out.println("Please type hit, stand, double or h, s, d");
+            }
+        }
+        return "";
+    }
+
+    /**
      * Asks user to input bet amount
      * @param input scanner
      * @return bet amount
      */
+    @Override
     public int bet(Scanner input){
         System.out.println("Your bank is $"+bank +"\n Please type your bet");
-        int betAmount = input.nextInt();
+        int betA = input.nextInt();
         input.nextLine();
-        while(betAmount <= 0 || betAmount > bank){
+        while(betA <= 0 || betA > bank){
             System.out.println("Bet must be less than or equal to bank and positive");
-            betAmount = input.nextInt();
+            betA = input.nextInt();
             input.nextLine();
         }
-        bank = bank - betAmount;
+        bank = bank - betA;
+        betAmount = betA;
         return betAmount;
+    }
+
+    @Override
+    public boolean doubleDown(){
+        if(betAmount > bank){
+            System.out.println("Not enough to double");
+            return false;
+        }
+        else{
+            bank = bank - betAmount;
+            betAmount = betAmount + betAmount;
+            return true;
+        }
     }
 
     
@@ -54,22 +97,13 @@ public class HumanPlayer extends Participant{
     
 
     public static void main(String[] args) {
-        // Scanner input = new Scanner(System.in);
-        // BlackjackShoe shoe = new BlackjackShoe(6);
         HumanPlayer player = new HumanPlayer();
-        // player.hit(shoe.deal());
-        // player.hit(shoe.deal());
-        // System.out.println(player.showHand());
-        // player.bet(input);
-        // while(player.wantsToHit(input)){
-        //     player.hit(shoe.deal());
-        //     System.out.println(player.showHand());
-        // }
-        Card card1 = new Card();
-        Card card2 = new Card(Card.Rank.TEN, Card.Suit.HEARTS);
-        player.hit(card1);
-        player.hit(card2);
-        System.out.println(player.showHand());
+        Scanner input = new Scanner(System.in);
+
+        String temp = player.getAction(input);
+
+        System.out.println(temp);
+        
        
 
     }

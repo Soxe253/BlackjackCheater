@@ -8,13 +8,32 @@ public class BStratUser extends Participant{
         strat = new BasicStrategy();
         hand = new ArrayList<Card>();
         handValue = 0;
+        betAmount = 0;
+        bank = 100;
+
     }
 
+    @Override
     public boolean wantsToHit(Scanner s){
         int dealerValue = dealersCard.getValue();
         
         return strat.shouldHit(this.soft, handValue, dealerValue);
     }
+
+    /**
+     * uses old logic from wantsToHit to decide to hit or stand
+     */
+    @Override
+    public String getAction(Scanner input) {
+        boolean hit = wantsToHit(input);
+        if(hit){
+            return "h";
+        }
+        else{
+            return "s";
+        }
+    }
+
 
     public static void main(String[] args) {
         BStratUser robot = new BStratUser();
@@ -37,8 +56,18 @@ public class BStratUser extends Participant{
 
     }
 
+    /**
+     * Currently just going to bet 10 every time
+     */
     @Override
     public int bet(Scanner input) {
+        bank = bank - 10;
+        betAmount = 10;
+        return betAmount;
+    }
+
+    @Override
+    public void doubleDown() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

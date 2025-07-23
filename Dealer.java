@@ -100,7 +100,21 @@ public class Dealer {
 
     public static void main(String[] args) {
         //BlackjackShoe shoe = new BlackjackShoe(6);
-       // Dealer dealer = new Dealer();
+       
         //dealer.playTurn(shoe);
+        Dealer dealer = new Dealer();
+        Card card1 = new Card();
+        Card card2 = new Card(Card.Rank.FOUR, Card.Suit.HEARTS);
+        dealer.hit(card1);
+        dealer.hit(card2);
+
+        System.out.println(dealer.showFirstCardHidden()  + " " + dealer.revealedCardValue());
+        if(dealer.revealedCardValue() == 10 || dealer.revealedCardValue() == 11){
+            System.out.println("Checking dealer Blackjack");
+            if(dealer.getHandValue() == 21){
+                System.out.println("Dealer has BlackJack!");
+            }
+            System.out.println("Dealer does not have blackjack");
+        }
     }
 }
